@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio Text to Voice - Neural AI</title>
+  <title>Aplikasi Text to Voice Indonesia</title>
   <style>
     * {
       box-sizing: border-box;
@@ -13,8 +13,8 @@
     }
 
     body {
-      background-color: #0b0f19;
-      color: #e2e8f0;
+      background-color: #0f172a;
+      color: #f8fafc;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -22,149 +22,106 @@
       padding: 1.5rem;
     }
 
-    .container {
-      background-color: #161e2e;
+    .card {
+      background-color: #1e293b;
       width: 100%;
-      max-width: 680px;
+      max-width: 600px;
       border-radius: 16px;
       padding: 2rem;
-      border: 1px solid #283548;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-
-    header {
-      margin-bottom: 1.5rem;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
     }
 
     h1 {
-      font-size: 1.6rem;
-      color: #38bdf8;
+      font-size: 1.5rem;
+      font-weight: 700;
       margin-bottom: 0.25rem;
+      color: #38bdf8;
     }
 
-    p.desc {
-      font-size: 0.875rem;
+    .notice {
+      font-size: 0.8rem;
       color: #94a3b8;
+      background-color: #0f172a;
+      border-left: 3px solid #38bdf8;
+      padding: 0.6rem 0.8rem;
+      border-radius: 4px;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
     }
 
-    .field {
+    .form-group {
+      margin-bottom: 1.25rem;
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
-      margin-bottom: 1.25rem;
     }
 
     label {
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       font-weight: 600;
       color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
     }
 
     textarea {
       width: 100%;
-      min-height: 140px;
-      background-color: #0d131f;
-      border: 1px solid #334155;
+      min-height: 130px;
+      background-color: #0f172a;
+      border: 1px solid #475569;
       border-radius: 8px;
       padding: 0.75rem;
       color: #f8fafc;
       font-size: 0.95rem;
-      outline: none;
       resize: vertical;
+      outline: none;
       transition: border-color 0.2s;
     }
 
-    textarea:focus {
+    textarea:focus, select:focus {
       border-color: #38bdf8;
     }
 
-    .voice-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .voice-card {
-      background-color: #0d131f;
-      border: 2px solid #334155;
-      border-radius: 10px;
-      padding: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      transition: all 0.2s ease;
-    }
-
-    .voice-card:hover {
-      border-color: #64748b;
-    }
-
-    .voice-card.active {
-      border-color: #38bdf8;
-      background-color: #0f2338;
-    }
-
-    .voice-card input[type="radio"] {
-      accent-color: #38bdf8;
-    }
-
-    .voice-info h3 {
-      font-size: 0.95rem;
+    select {
+      width: 100%;
+      background-color: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 0.75rem;
       color: #f8fafc;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
     }
 
-    .voice-info span {
-      font-size: 0.75rem;
-      color: #94a3b8;
-    }
-
-    .slider-row {
+    .slider-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      margin-bottom: 1.5rem;
     }
 
     input[type="range"] {
       width: 100%;
       accent-color: #38bdf8;
+      cursor: pointer;
     }
 
-    .actions {
-      display: flex;
+    .controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
       gap: 0.75rem;
+      margin-top: 1.5rem;
     }
 
     button {
-      flex: 1;
-      padding: 0.85rem;
+      padding: 0.8rem;
       font-size: 0.95rem;
       font-weight: 600;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .btn-speak {
-      background-color: #0284c7;
-      color: #ffffff;
-    }
-
-    .btn-speak:hover:not(:disabled) {
-      background-color: #0369a1;
-    }
-
-    .btn-stop {
-      background-color: #ef4444;
-      color: #ffffff;
-      flex: 0.35;
-    }
-
-    .btn-stop:hover:not(:disabled) {
-      background-color: #dc2626;
+      transition: opacity 0.2s;
     }
 
     button:disabled {
@@ -172,193 +129,189 @@
       cursor: not-allowed;
     }
 
-    .status-badge {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      margin-top: 0.75rem;
-      text-align: center;
+    .btn-play {
+      background-color: #0284c7;
+      color: #ffffff;
     }
 
-    @media (max-width: 520px) {
-      .voice-selector, .slider-row {
+    .btn-pause {
+      background-color: #334155;
+      color: #f8fafc;
+    }
+
+    .btn-stop {
+      background-color: #ef4444;
+      color: #ffffff;
+    }
+
+    @media (max-width: 480px) {
+      .slider-grid, .controls {
         grid-template-columns: 1fr;
       }
     }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script>
 </head>
 <body>
 
-  <main class="container">
+  <main class="card">
     <header>
-      <h1>Studio Voice AI (Indonesia)</h1>
-      <p class="desc">Neural TTS suara natural pria & perempuan</p>
+      <h1>Text to Voice Indonesia</h1>
     </header>
 
-    <div class="field">
-      <label>Karakter Suara</label>
-      <div class="voice-selector">
-        <label class="voice-card active" id="card-gadis">
-          <input type="radio" name="voice" value="id-ID-GadisNeural" checked>
-          <div class="voice-info">
-            <h3>Gadis (Neural)</h3>
-            <span>Perempuan • Luwes & Halus</span>
-          </div>
-        </label>
+    <div class="notice">
+      Buka file ini di <strong>Microsoft Edge</strong> agar suara <strong>Ardi (Pria)</strong> dan <strong>Gadis (Wanita)</strong> kualitas natural AI langsung aktif otomatis tanpa perlu key.
+    </div>
 
-        <label class="voice-card" id="card-ardi">
-          <input type="radio" name="voice" value="id-ID-ArdiNeural">
-          <div class="voice-info">
-            <h3>Ardi (Neural)</h3>
-            <span>Laki-laki • Jelas & Berwibawa</span>
-          </div>
-        </label>
+    <div class="form-group">
+      <label for="text-input">Naskah Kalimat</label>
+      <textarea id="text-input" placeholder="Tuliskan naskah atau kata-kata yang ingin disuarakan di sini..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="voice-select">Pilihan Suara & Karakter</label>
+      <select id="voice-select">
+        <option value="">Memuat daftar suara...</option>
+      </select>
+    </div>
+
+    <div class="slider-grid">
+      <div class="form-group">
+        <label for="rate">Kecepatan: <span id="rate-val">1.0</span>x</label>
+        <input type="range" id="rate" min="0.6" max="1.5" value="1.0" step="0.05">
+      </div>
+      <div class="form-group">
+        <label for="pitch">Nada (Pitch): <span id="pitch-val">1.0</span></label>
+        <input type="range" id="pitch" min="0.7" max="1.3" value="1.0" step="0.05">
       </div>
     </div>
 
-    <div class="field">
-      <label for="text-input">Naskah Teks</label>
-      <textarea id="text-input" placeholder="Tulis kalimat bahasa Indonesia di sini..."></textarea>
-    </div>
-
-    <div class="slider-row">
-      <div class="field" style="margin-bottom:0">
-        <label for="speed-range">Kecepatan: <span id="speed-val">0%</span></label>
-        <input type="range" id="speed-range" min="-30" max="30" value="0" step="5">
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label for="pitch-range">Nada: <span id="pitch-val">0%</span></label>
-        <input type="range" id="pitch-range" min="-20" max="20" value="0" step="5">
-      </div>
-    </div>
-
-    <div class="actions">
-      <button id="btn-speak" class="btn-speak">Putar Suara</button>
+    <div class="controls">
+      <button id="btn-play" class="btn-play">Mulai Bicara</button>
+      <button id="btn-pause" class="btn-pause">Pause</button>
       <button id="btn-stop" class="btn-stop">Stop</button>
     </div>
-
-    <div id="status" class="status-badge">Siap digunakan</div>
   </main>
 
   <script>
-    // ==========================================
-    // MASUKKAN KREDENSIAL KAMU DI SINI
-    // ==========================================
-    const AZURE_KEY = "MASUKKAN_32_KARAKTER_KEY_KAMU_DI_SINI";
-    const AZURE_REGION = "southeastasia"; // sesuaikan dengan region resource kamu
-    // ==========================================
-
+    const synth = window.speechSynthesis;
     const textInput = document.getElementById('text-input');
-    const speedRange = document.getElementById('speed-range');
-    const pitchRange = document.getElementById('pitch-range');
-    const speedVal = document.getElementById('speed-val');
+    const voiceSelect = document.getElementById('voice-select');
+    const rateInput = document.getElementById('rate');
+    const pitchInput = document.getElementById('pitch');
+    const rateVal = document.getElementById('rate-val');
     const pitchVal = document.getElementById('pitch-val');
-    const btnSpeak = document.getElementById('btn-speak');
+    const btnPlay = document.getElementById('btn-play');
+    const btnPause = document.getElementById('btn-pause');
     const btnStop = document.getElementById('btn-stop');
-    const statusText = document.getElementById('status');
-    const voiceCards = document.querySelectorAll('.voice-card');
 
-    let player = null;
-    let synthesizer = null;
+    let voices = [];
 
-    voiceCards.forEach(card => {
-      card.addEventListener('click', () => {
-        voiceCards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        card.querySelector('input[type="radio"]').checked = true;
-      });
-    });
-
-    speedRange.addEventListener('input', (e) => {
-      speedVal.textContent = `${e.target.value > 0 ? '+' : ''}${e.target.value}%`;
-    });
-
-    pitchRange.addEventListener('input', (e) => {
-      pitchVal.textContent = `${e.target.value > 0 ? '+' : ''}${e.target.value}%`;
-    });
-
-    const stopAudio = () => {
-      if (player) {
-        player.pause();
-        player = null;
-      }
-      if (synthesizer) {
-        synthesizer.close();
-        synthesizer = null;
-      }
-      btnSpeak.disabled = false;
-      statusText.textContent = 'Pemutaran dihentikan';
+    const formatVoiceName = (voice) => {
+      const name = voice.name;
+      if (name.includes('Gadis')) return 'Gadis (Wanita - Natural AI)';
+      if (name.includes('Ardi')) return 'Ardi (Pria - Natural AI)';
+      if (name.includes('Google') && voice.lang.startsWith('id')) return 'Google Indonesia (Wanita)';
+      return `${name} (${voice.lang})`;
     };
 
-    btnStop.addEventListener('click', stopAudio);
+    const populateVoiceList = () => {
+      voices = synth.getVoices();
+      if (!voices.length) return;
 
-    btnSpeak.addEventListener('click', () => {
+      voiceSelect.innerHTML = '';
+
+      // Prioritaskan suara Indonesia
+      const idVoices = voices.filter(v => v.lang.includes('id') || v.lang.includes('ID'));
+      const otherVoices = voices.filter(v => !v.lang.includes('id') && !v.lang.includes('ID'));
+
+      const sortedVoices = [...idVoices, ...otherVoices];
+
+      sortedVoices.forEach((voice) => {
+        const option = document.createElement('option');
+        option.value = voice.voiceURI;
+        option.textContent = formatVoiceName(voice);
+        voiceSelect.appendChild(option);
+      });
+
+      // Pilih otomatis Gadis atau Ardi jika ada
+      const naturalVoice = sortedVoices.find(v => v.name.includes('Gadis') || v.name.includes('Ardi'));
+      if (naturalVoice) {
+        voiceSelect.value = naturalVoice.voiceURI;
+      }
+    };
+
+    populateVoiceList();
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = populateVoiceList;
+    }
+
+    rateInput.addEventListener('input', (e) => {
+      rateVal.textContent = e.target.value;
+    });
+
+    pitchInput.addEventListener('input', (e) => {
+      pitchVal.textContent = e.target.value;
+    });
+
+    const speak = () => {
+      if (synth.speaking) {
+        if (synth.paused) {
+          synth.resume();
+          btnPause.textContent = 'Pause';
+          return;
+        }
+        synth.cancel();
+      }
+
       const text = textInput.value.trim();
-
-      if (!AZURE_KEY || AZURE_KEY === "MASUKKAN_32_KARAKTER_KEY_KAMU_DI_SINI") {
-        alert('Harap masukkan Azure Key ke dalam variabel AZURE_KEY di baris script terlebih dahulu.');
-        return;
-      }
-
       if (!text) {
-        alert('Masukkan teks yang ingin dibacakan.');
+        alert('Tuliskan teks terlebih dahulu.');
         return;
       }
 
-      stopAudio();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedURI = voiceSelect.value;
+      const matchedVoice = voices.find(v => v.voiceURI === selectedURI);
 
-      btnSpeak.disabled = true;
-      statusText.textContent = 'Memproses sintesis suara...';
-
-      try {
-        const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(AZURE_KEY, AZURE_REGION);
-        player = new SpeechSDK.SpeakerAudioDestination();
-        const audioConfig = SpeechSDK.AudioConfig.fromSpeakerOutput(player);
-
-        synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);
-
-        const selectedVoice = document.querySelector('input[name="voice"]:checked').value;
-        const rateRate = speedRange.value >= 0 ? `+${speedRange.value}%` : `${speedRange.value}%`;
-        const pitchRate = pitchRange.value >= 0 ? `+${pitchRange.value}%` : `${pitchRange.value}%`;
-
-        const ssml = `
-          <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="id-ID">
-            <voice name="${selectedVoice}">
-              <prosody rate="${rateRate}" pitch="${pitchRate}">
-                ${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
-              </prosody>
-            </voice>
-          </speak>
-        `;
-
-        player.onAudioEnd = () => {
-          btnSpeak.disabled = false;
-          statusText.textContent = 'Selesai membaca';
-        };
-
-        synthesizer.speakSsmlAsync(
-          ssml,
-          (result) => {
-            if (result.reason === SpeechSDK.ResultReason.SynthesizingAudioCompleted) {
-              statusText.textContent = 'Sedang berbicara...';
-            } else {
-              statusText.textContent = `Gagal: ${result.errorDetails || 'Periksa Key & Region'}`;
-              btnSpeak.disabled = false;
-            }
-          },
-          (error) => {
-            console.error(error);
-            statusText.textContent = 'Terjadi kesalahan jaringan atau koneksi API.';
-            btnSpeak.disabled = false;
-          }
-        );
-
-      } catch (err) {
-        console.error(err);
-        statusText.textContent = 'Gagal inisialisasi SDK.';
-        btnSpeak.disabled = false;
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
       }
+
+      utterance.rate = parseFloat(rateInput.value);
+      utterance.pitch = parseFloat(pitchInput.value);
+
+      utterance.onend = () => {
+        btnPlay.textContent = 'Mulai Bicara';
+        btnPause.textContent = 'Pause';
+      };
+
+      utterance.onerror = () => {
+        btnPlay.textContent = 'Mulai Bicara';
+      };
+
+      synth.speak(utterance);
+      btnPlay.textContent = 'Ulangi';
+      btnPause.textContent = 'Pause';
+    };
+
+    btnPlay.addEventListener('click', speak);
+
+    btnPause.addEventListener('click', () => {
+      if (!synth.speaking) return;
+
+      if (synth.paused) {
+        synth.resume();
+        btnPause.textContent = 'Pause';
+      } else {
+        synth.pause();
+        btnPause.textContent = 'Lanjut';
+      }
+    });
+
+    btnStop.addEventListener('click', () => {
+      synth.cancel();
+      btnPlay.textContent = 'Mulai Bicara';
+      btnPause.textContent = 'Pause';
     });
   </script>
 </body>
