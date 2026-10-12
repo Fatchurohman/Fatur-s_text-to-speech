@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Text to Voice - Neural AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0b0f19;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .container {
+      background-color: #161e2e;
+      width: 100%;
+      max-width: 680px;
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid #283548;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #38bdf8;
+      margin-bottom: 0.25rem;
+    }
+
+    p.desc {
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background-color: #0d131f;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #f8fafc;
+      font-size: 0.95rem;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: #38bdf8;
+    }
+
+    .voice-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .voice-card {
+      background-color: #0d131f;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .voice-card:hover {
+      border-color: #64748b;
+    }
+
+    .voice-card.active {
+      border-color: #38bdf8;
+      background-color: #0f2338;
+    }
+
+    .voice-card input[type="radio"] {
+      accent-color: #38bdf8;
+    }
+
+    .voice-info h3 {
+      font-size: 0.95rem;
+      color: #f8fafc;
+    }
+
+    .voice-info span {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #38bdf8;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.85rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-speak {
+      background-color: #0284c7;
+      color: #ffffff;
+    }
+
+    .btn-speak:hover:not(:disabled) {
+      background-color: #0369a1;
+    }
+
+    .btn-stop {
+      background-color: #ef4444;
+      color: #ffffff;
+      flex: 0.35;
+    }
+
+    .btn-stop:hover:not(:disabled) {
+      background-color: #dc2626;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status-badge {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .voice-selector, .slider-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script>
+</head>
+<body>
+
+  <main class="container">
+    <header>
+      <h1>Studio Voice AI (Indonesia)</h1>
+      <p class="desc">Neural TTS suara natural pria & perempuan</p>
+    </header>
+
+    <div class="field">
+      <label>Karakter Suara</label>
+      <div class="voice-selector">
+        <label class="voice-card active" id="card-gadis">
+          <input type="radio" name="voice" value="id-ID-GadisNeural" checked>
+          <div class="voice-info">
+            <h3>Gadis (Neural)</h3>
+            <span>Perempuan • Luwes & Halus</span>
+          </div>
+        </label>
+
+        <label class="voice-card" id="card-ardi">
+          <input type="radio" name="voice" value="id-ID-ArdiNeural">
+          <div class="voice-info">
+            <h3>Ardi (Neural)</h3>
+            <span>Laki-laki • Jelas & Berwibawa</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="text-input">Naskah Teks</label>
+      <textarea id="text-input" placeholder="Tulis kalimat bahasa Indonesia di sini..."></textarea>
+    </div>
+
+    <div class="slider-row">
+      <div class="field" style="margin-bottom:0">
+        <label for="speed-range">Kecepatan: <span id="speed-val">0%</span></label>
+        <input type="range" id="speed-range" min="-30" max="30" value="0" step="5">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="pitch-range">Nada: <span id="pitch-val">0%</span></label>
+        <input type="range" id="pitch-range" min="-20" max="20" value="0" step="5">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btn-speak" class="btn-speak">Putar Suara</button>
+      <button id="btn-stop" class="btn-stop">Stop</button>
+    </div>
+
+    <div id="status" class="status-badge">Siap digunakan</div>
+  </main>
+
+  <script>
+    // ==========================================
+    // MASUKKAN KREDENSIAL KAMU DI SINI
+    // ==========================================
+    const AZURE_KEY = "MASUKKAN_32_KARAKTER_KEY_KAMU_DI_SINI";
+    const AZURE_REGION = "southeastasia"; // sesuaikan dengan region resource kamu
+    // ==========================================
+
+    const textInput = document.getElementById('text-input');
+    const speedRange = document.getElementById('speed-range');
+    const pitchRange = document.getElementById('pitch-range');
+    const speedVal = document.getElementById('speed-val');
+    const pitchVal = document.getElementById('pitch-val');
+    const btnSpeak = document.getElementById('btn-speak');
+    const btnStop = document.getElementById('btn-stop');
+    const statusText = document.getElementById('status');
+    const voiceCards = document.querySelectorAll('.voice-card');
+
+    let player = null;
+    let synthesizer = null;
+
+    voiceCards.forEach(card => {
+      card.addEventListener('click', () => {
+        voiceCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        card.querySelector('input[type="radio"]').checked = true;
+      });
+    });
+
+    speedRange.addEventListener('input', (e) => {
+      speedVal.textContent = `${e.target.value > 0 ? '+' : ''}${e.target.value}%`;
+    });
+
+    pitchRange.addEventListener('input', (e) => {
+      pitchVal.textContent = `${e.target.value > 0 ? '+' : ''}${e.target.value}%`;
+    });
+
+    const stopAudio = () => {
+      if (player) {
+        player.pause();
+        player = null;
+      }
+      if (synthesizer) {
+        synthesizer.close();
+        synthesizer = null;
+      }
+      btnSpeak.disabled = false;
+      statusText.textContent = 'Pemutaran dihentikan';
+    };
+
+    btnStop.addEventListener('click', stopAudio);
+
+    btnSpeak.addEventListener('click', () => {
+      const text = textInput.value.trim();
+
+      if (!AZURE_KEY || AZURE_KEY === "MASUKKAN_32_KARAKTER_KEY_KAMU_DI_SINI") {
+        alert('Harap masukkan Azure Key ke dalam variabel AZURE_KEY di baris script terlebih dahulu.');
+        return;
+      }
+
+      if (!text) {
+        alert('Masukkan teks yang ingin dibacakan.');
+        return;
+      }
+
+      stopAudio();
+
+      btnSpeak.disabled = true;
+      statusText.textContent = 'Memproses sintesis suara...';
+
+      try {
+        const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(AZURE_KEY, AZURE_REGION);
+        player = new SpeechSDK.SpeakerAudioDestination();
+        const audioConfig = SpeechSDK.AudioConfig.fromSpeakerOutput(player);
+
+        synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);
+
+        const selectedVoice = document.querySelector('input[name="voice"]:checked').value;
+        const rateRate = speedRange.value >= 0 ? `+${speedRange.value}%` : `${speedRange.value}%`;
+        const pitchRate = pitchRange.value >= 0 ? `+${pitchRange.value}%` : `${pitchRange.value}%`;
+
+        const ssml = `
+          <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="id-ID">
+            <voice name="${selectedVoice}">
+              <prosody rate="${rateRate}" pitch="${pitchRate}">
+                ${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+              </prosody>
+            </voice>
+          </speak>
+        `;
+
+        player.onAudioEnd = () => {
+          btnSpeak.disabled = false;
+          statusText.textContent = 'Selesai membaca';
+        };
+
+        synthesizer.speakSsmlAsync(
+          ssml,
+          (result) => {
+            if (result.reason === SpeechSDK.ResultReason.SynthesizingAudioCompleted) {
+              statusText.textContent = 'Sedang berbicara...';
+            } else {
+              statusText.textContent = `Gagal: ${result.errorDetails || 'Periksa Key & Region'}`;
+              btnSpeak.disabled = false;
+            }
+          },
+          (error) => {
+            console.error(error);
+            statusText.textContent = 'Terjadi kesalahan jaringan atau koneksi API.';
+            btnSpeak.disabled = false;
+          }
+        );
+
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = 'Gagal inisialisasi SDK.';
+        btnSpeak.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
