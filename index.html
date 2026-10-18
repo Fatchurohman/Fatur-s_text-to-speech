@@ -1,4 +1,518 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edge Natural AI Text to Speech Studio</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #151e2e;
+      --input: #0d131f;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --amber: #f59e0b;
+      --green: #10b981;
+      --blue: #3b82f6;
+      --red: #ef4444;
+      --border: #2e3c54;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      font-size: 1.25rem;
+      color: var(--amber);
+      margin-bottom: 0.35rem;
+    }
+    p.desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    textarea, select {
+      width: 100%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+      margin-bottom: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+    textarea:focus, select:focus {
+      border-color: var(--amber);
+    }
+    .character-picker {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .char-btn {
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .char-btn.active {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--amber);
+    }
+    .char-badge {
+      font-size: 0.68rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      background: var(--border);
+      color: var(--muted);
+    }
+    .char-btn.active .char-badge {
+      background: var(--amber);
+      color: #090d16;
+      font-weight: 700;
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .range-group {
+      background: var(--input);
+      border: 1px solid var(--border);
+      padding: 0.7rem 0.85rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
+    .range-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .range-header span.val {
+      color: var(--amber);
+      font-weight: bold;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--amber);
+      cursor: pointer;
+    }
+    .btn-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-secondary { background: var(--input); color: var(--text); border: 1px solid var(--border); }
+    .btn-red { background: var(--red); color: #fff; }
+    .status {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+    .status.info { display: block; background: rgba(59,130,246,0.15); border: 1px solid var(--blue); color: #93c5fd; }
+    .status.success { display: block; background: rgba(16,185,129,0.15); border: 1px solid var(--green); color: #6ee7b7; }
+    .status.error { display: block; background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: #fca5a5; }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+    <section class="panel">
+      <h1>Edge Natural AI Text to Speech</h1>
+      <p class="desc">Gunakan di Microsoft Edge untuk menikmati kualitas suara AI alami bahasa Indonesia (Ardi &amp; Gadis) tanpa API key.</p>
+
+      <label>Karakter Vokal Utama:</label>
+      <div class="character-picker">
+        <button type="button" id="pickArdi" class="char-btn active">
+          <span>Ardi (Pria)</span>
+          <span class="char-badge">Natural AI</span>
+        </button>
+        <button type="button" id="pickGadis" class="char-btn">
+          <span>Gadis (Wanita)</span>
+          <span class="char-badge">Natural AI</span>
+        </button>
+      </div>
+
+      <label for="ttsInput">Teks yang akan diucapkan:</label>
+      <textarea id="ttsInput" placeholder="Tuliskan teks kamu di sini...">Halo! Ini adalah suara natural dari Microsoft Edge. Kamu bisa mendengarkan intonasi bahasa Indonesia yang luwes dan manusiawi.</textarea>
+
+      <div class="control-grid">
+        <div>
+          <label for="voiceSelect">Daftar Suara:</label>
+          <select id="voiceSelect"></select>
+        </div>
+        <div>
+          <label for="stylePreset">Gaya Bicara:</label>
+          <select id="stylePreset">
+            <option value="standard" selected>Normal / Santai</option>
+            <option value="formal">Berita / Formal</option>
+            <option value="cheerful">Ceria / Antusias</option>
+            <option value="storyteller">Mendongeng</option>
+            <option value="deep">Wibawa / Berat</option>
+            <option value="custom">Kustom</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="range-group">
+        <div class="range-header">
+          <span>Tinggi Nada Suara (Pitch)</span>
+          <span id="pitchVal" class="val">1.00x</span>
+        </div>
+        <input type="range" id="pitchRange" min="0.5" max="1.5" step="0.05" value="1.0">
+      </div>
+
+      <div class="range-group">
+        <div class="range-header">
+          <span>Kecepatan Bicara (Rate)</span>
+          <span id="rateVal" class="val">1.00x</span>
+        </div>
+        <input type="range" id="rateRange" min="0.5" max="1.8" step="0.05" value="1.0">
+      </div>
+
+      <div class="range-group">
+        <div class="range-header">
+          <span>Volume</span>
+          <span id="volumeVal" class="val">100%</span>
+        </div>
+        <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="1.0">
+      </div>
+
+      <div class="btn-row-3">
+        <button type="button" id="speakBtn" class="btn btn-green">Bicara</button>
+        <button type="button" id="pauseBtn" class="btn btn-secondary">Jeda</button>
+        <button type="button" id="stopBtn" class="btn btn-red">Stop</button>
+      </div>
+
+      <div id="ttsStatus" class="status"></div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const ttsInput = document.getElementById('ttsInput');
+      const voiceSelect = document.getElementById('voiceSelect');
+      const pickArdi = document.getElementById('pickArdi');
+      const pickGadis = document.getElementById('pickGadis');
+      const stylePreset = document.getElementById('stylePreset');
+      const pitchRange = document.getElementById('pitchRange');
+      const rateRange = document.getElementById('rateRange');
+      const volumeRange = document.getElementById('volumeRange');
+      const pitchVal = document.getElementById('pitchVal');
+      const rateVal = document.getElementById('rateVal');
+      const volumeVal = document.getElementById('volumeVal');
+      const speakBtn = document.getElementById('speakBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const ttsStatus = document.getElementById('ttsStatus');
+
+      let voices = [];
+      let activeGender = 'male';
+      const synth = window.speechSynthesis;
+
+      const setStatus = (msg, type = 'info') => {
+        if (!msg) {
+          ttsStatus.className = 'status';
+          ttsStatus.textContent = '';
+          return;
+        }
+        ttsStatus.textContent = msg;
+        ttsStatus.className = `status ${type}`;
+      };
+
+      const PRESETS = {
+        standard: { pitch: 1.0, rate: 1.0 },
+        formal: { pitch: 0.95, rate: 0.92 },
+        cheerful: { pitch: 1.25, rate: 1.1 },
+        storyteller: { pitch: 1.05, rate: 0.85 },
+        deep: { pitch: 0.7, rate: 0.9 }
+      };
+
+      const loadVoices = () => {
+        if (!synth) {
+          setStatus('Browser kamu tidak mendukung Web Speech API.', 'error');
+          return;
+        }
+
+        const rawVoices = synth.getVoices() || [];
+        if (rawVoices.length === 0) return;
+
+        voices = rawVoices.sort((a, b) => {
+          const aId = a.lang.toLowerCase().includes('id');
+          const bId = b.lang.toLowerCase().includes('id');
+          const aEdge = a.name.toLowerCase().includes('natural');
+          const bEdge = b.name.toLowerCase().includes('natural');
+
+          if (aId && aEdge && (!bId || !bEdge)) return -1;
+          if (bId && bEdge && (!aId || !aEdge)) return 1;
+          if (aId && !bId) return -1;
+          if (!aId && bId) return 1;
+          return a.name.localeCompare(b.name);
+        });
+
+        const prevSelected = voiceSelect.value;
+        voiceSelect.innerHTML = '';
+
+        let ardiVoiceName = '';
+        let gadisVoiceName = '';
+
+        voices.forEach((v) => {
+          const opt = document.createElement('option');
+          opt.value = v.name;
+          const lower = v.name.toLowerCase();
+
+          let tag = '';
+          if (lower.includes('ardi')) {
+            tag = ' [Ardi - Pria Natural]';
+            if (!ardiVoiceName) ardiVoiceName = v.name;
+          } else if (lower.includes('gadis')) {
+            tag = ' [Gadis - Wanita Natural]';
+            if (!gadisVoiceName) gadisVoiceName = v.name;
+          } else if (v.lang.toLowerCase().includes('id')) {
+            tag = ' [Indonesia]';
+          }
+
+          opt.textContent = `${v.name} (${v.lang})${tag}`;
+          voiceSelect.appendChild(opt);
+        });
+
+        let targetVoice = activeGender === 'male' ? ardiVoiceName : gadisVoiceName;
+        if (!targetVoice && prevSelected) targetVoice = prevSelected;
+        if (!targetVoice && voices.length > 0) targetVoice = voices[0].name;
+
+        if (targetVoice) {
+          voiceSelect.value = targetVoice;
+        }
+
+        const isEdgeNatural = (activeGender === 'male' && ardiVoiceName) || (activeGender === 'female' && gadisVoiceName);
+        if (isEdgeNatural) {
+          setStatus(`Suara ${activeGender === 'male' ? 'Ardi (Pria)' : 'Gadis (Wanita)'} Natural AI siap digunakan.`, 'success');
+        } else {
+          setStatus('Buka file ini di Microsoft Edge untuk mengaktifkan suara Ardi & Gadis Natural AI secara otomatis.', 'info');
+        }
+      };
+
+      loadVoices();
+      if (synth && synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = loadVoices;
+      }
+
+      let checkCount = 0;
+      const voiceCheckInterval = setInterval(() => {
+        checkCount += 1;
+        if (voices.length > 0 && voices.some((v) => v.name.toLowerCase().includes('ardi'))) {
+          clearInterval(voiceCheckInterval);
+        } else {
+          loadVoices();
+          if (checkCount >= 6) clearInterval(voiceCheckInterval);
+        }
+      }, 500);
+
+      const selectCharacter = (gender) => {
+        activeGender = gender;
+        if (gender === 'male') {
+          pickArdi.classList.add('active');
+          pickGadis.classList.remove('active');
+        } else {
+          pickGadis.classList.add('active');
+          pickArdi.classList.remove('active');
+        }
+
+        const match = voices.find((v) => {
+          const name = v.name.toLowerCase();
+          return gender === 'male' ? name.includes('ardi') : name.includes('gadis');
+        });
+
+        if (match) {
+          voiceSelect.value = match.name;
+          setStatus(`Suara diubah ke: ${match.name}`, 'success');
+        } else {
+          const fallback = voices.find((v) => v.lang.toLowerCase().includes('id'));
+          if (fallback) {
+            voiceSelect.value = fallback.name;
+            setStatus(`Suara dialihkan ke vokal lokal (${fallback.name}).`, 'info');
+          }
+        }
+      };
+
+      pickArdi.addEventListener('click', () => selectCharacter('male'));
+      pickGadis.addEventListener('click', () => selectCharacter('female'));
+
+      voiceSelect.addEventListener('change', () => {
+        const val = voiceSelect.value.toLowerCase();
+        if (val.includes('ardi')) {
+          activeGender = 'male';
+          pickArdi.classList.add('active');
+          pickGadis.classList.remove('active');
+        } else if (val.includes('gadis')) {
+          activeGender = 'female';
+          pickGadis.classList.add('active');
+          pickArdi.classList.remove('active');
+        }
+      });
+
+      stylePreset.addEventListener('change', () => {
+        const val = stylePreset.value;
+        if (val !== 'custom' && PRESETS[val]) {
+          const cfg = PRESETS[val];
+          pitchRange.value = cfg.pitch;
+          rateRange.value = cfg.rate;
+          pitchVal.textContent = `${cfg.pitch.toFixed(2)}x`;
+          rateVal.textContent = `${cfg.rate.toFixed(2)}x`;
+        }
+      });
+
+      pitchRange.addEventListener('input', () => {
+        pitchVal.textContent = `${parseFloat(pitchRange.value).toFixed(2)}x`;
+        stylePreset.value = 'custom';
+      });
+
+      rateRange.addEventListener('input', () => {
+        rateVal.textContent = `${parseFloat(rateRange.value).toFixed(2)}x`;
+        stylePreset.value = 'custom';
+      });
+
+      volumeRange.addEventListener('input', () => {
+        volumeVal.textContent = `${Math.round(parseFloat(volumeRange.value) * 100)}%`;
+      });
+
+      speakBtn.addEventListener('click', () => {
+        if (!synth) return;
+
+        if (synth.paused) {
+          synth.resume();
+          setStatus('Melanjutkan suara...', 'info');
+          return;
+        }
+
+        const text = ttsInput.value ? ttsInput.value.trim() : '';
+        if (!text) {
+          setStatus('Silakan ketikkan teks terlebih dahulu.', 'error');
+          return;
+        }
+
+        synth.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        const selected = voices.find((v) => v.name === voiceSelect.value);
+
+        if (selected) {
+          utterance.voice = selected;
+          utterance.lang = selected.lang;
+        }
+
+        utterance.pitch = parseFloat(pitchRange.value) || 1.0;
+        utterance.rate = parseFloat(rateRange.value) || 1.0;
+        utterance.volume = parseFloat(volumeRange.value) || 1.0;
+
+        utterance.onstart = () => {
+          setStatus('Sedang berbicara...', 'info');
+          speakBtn.disabled = true;
+        };
+
+        utterance.onend = () => {
+          setStatus('Selesai berbicara.', 'success');
+          speakBtn.disabled = false;
+        };
+
+        utterance.onerror = (e) => {
+          setStatus(`Gangguan pemutaran suara: ${e.error || 'Terhenti'}`, 'error');
+          speakBtn.disabled = false;
+        };
+
+        synth.speak(utterance);
+      });
+
+      pauseBtn.addEventListener('click', () => {
+        if (synth && synth.speaking) {
+          if (!synth.paused) {
+            synth.pause();
+            setStatus('Suara dijeda.', 'info');
+          } else {
+            synth.resume();
+            setStatus('Suara dilanjutkan.', 'info');
+          }
+        }
+      });
+
+      stopBtn.addEventListener('click', () => {
+        if (synth) {
+          synth.cancel();
+          speakBtn.disabled = false;
+          setStatus('Suara dihentikan.', 'info');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
 <html lang="id">
 <head>
   <meta charset="UTF-8">
