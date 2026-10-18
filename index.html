@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -22,14 +22,14 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding: 2rem 1rem;
+      padding: 1.5rem 1rem;
       display: flex;
       justify-content: center;
       min-height: 100vh;
     }
     .container {
       width: 100%;
-      max-width: 560px;
+      max-width: 540px;
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
@@ -185,7 +185,7 @@
   <main class="container">
     <section class="panel">
       <h1>Edge Natural AI Text to Speech</h1>
-      <p class="desc">Gunakan di Microsoft Edge untuk menikmati kualitas suara AI alami bahasa Indonesia (Ardi &amp; Gadis) tanpa API key.</p>
+      <p class="desc">Buka di browser Microsoft Edge agar suara natural Ardi &amp; Gadis langsung aktif otomatis tanpa registrasi atau API key.</p>
 
       <label>Karakter Vokal Utama:</label>
       <div class="character-picker">
@@ -200,22 +200,22 @@
       </div>
 
       <label for="ttsInput">Teks yang akan diucapkan:</label>
-      <textarea id="ttsInput" placeholder="Tuliskan teks kamu di sini...">Halo! Ini adalah suara natural dari Microsoft Edge. Kamu bisa mendengarkan intonasi bahasa Indonesia yang luwes dan manusiawi.</textarea>
+      <textarea id="ttsInput" placeholder="Tuliskan teks kamu di sini...">Halo! Sekarang suara natural Microsoft Edge sudah aktif otomatis. Kamu bisa mendengarkan intonasi alami bahasa Indonesia tanpa konfigurasi yang rumit.</textarea>
 
       <div class="control-grid">
         <div>
-          <label for="voiceSelect">Daftar Suara:</label>
+          <label for="voiceSelect">Daftar Suara Terdeteksi:</label>
           <select id="voiceSelect"></select>
         </div>
         <div>
           <label for="stylePreset">Gaya Bicara:</label>
           <select id="stylePreset">
-            <option value="standard" selected>Normal / Santai</option>
-            <option value="formal">Berita / Formal</option>
+            <option value="standard" selected>Normal / Percakapan</option>
+            <option value="formal">Berita / Formal (Tertata)</option>
             <option value="cheerful">Ceria / Antusias</option>
-            <option value="storyteller">Mendongeng</option>
-            <option value="deep">Wibawa / Berat</option>
-            <option value="custom">Kustom</option>
+            <option value="storyteller">Mendongeng / Santai</option>
+            <option value="deep">Wibawa / Dalam</option>
+            <option value="custom">Kustom (Manual)</option>
           </select>
         </div>
       </div>
@@ -238,7 +238,7 @@
 
       <div class="range-group">
         <div class="range-header">
-          <span>Volume</span>
+          <span>Volume Suara</span>
           <span id="volumeVal" class="val">100%</span>
         </div>
         <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="1.0">
@@ -303,6 +303,7 @@
         const rawVoices = synth.getVoices() || [];
         if (rawVoices.length === 0) return;
 
+        // Prioritas Bahasa Indonesia dan Edge Natural Voice
         voices = rawVoices.sort((a, b) => {
           const aId = a.lang.toLowerCase().includes('id');
           const bId = b.lang.toLowerCase().includes('id');
@@ -354,7 +355,7 @@
         if (isEdgeNatural) {
           setStatus(`Suara ${activeGender === 'male' ? 'Ardi (Pria)' : 'Gadis (Wanita)'} Natural AI siap digunakan.`, 'success');
         } else {
-          setStatus('Buka file ini di Microsoft Edge untuk mengaktifkan suara Ardi & Gadis Natural AI secara otomatis.', 'info');
+          setStatus('Buka link ini di Microsoft Edge untuk mengaktifkan suara Ardi & Gadis Natural AI secara otomatis.', 'info');
         }
       };
 
@@ -363,6 +364,7 @@
         synth.onvoiceschanged = loadVoices;
       }
 
+      // Polling berkala mengantisipasi lazy-load suara Edge
       let checkCount = 0;
       const voiceCheckInterval = setInterval(() => {
         checkCount += 1;
@@ -453,7 +455,7 @@
 
         const text = ttsInput.value ? ttsInput.value.trim() : '';
         if (!text) {
-          setStatus('Silakan ketikkan teks terlebih dahulu.', 'error');
+          setStatus('Ketikkan teks terlebih dahulu.', 'error');
           return;
         }
 
@@ -506,717 +508,6 @@
           synth.cancel();
           speakBtn.disabled = false;
           setStatus('Suara dihentikan.', 'info');
-        }
-      });
-    });
-  </script>
-</body>
-</html>
-
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edge Natural TTS & Suno Downloader</title>
-  <style>
-    :root {
-      --bg: #090d16;
-      --card: #151e2e;
-      --input: #0d131f;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --amber: #f59e0b;
-      --green: #10b981;
-      --blue: #3b82f6;
-      --red: #ef4444;
-      --purple: #8b5cf6;
-      --border: #2e3c54;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 1.5rem 1rem;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      width: 100%;
-      max-width: 580px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-    h1 { font-size: 1.2rem; color: var(--amber); margin-bottom: 0.35rem; }
-    h2 { font-size: 1.05rem; color: var(--text); margin-bottom: 0.35rem; }
-    p.desc { font-size: 0.82rem; color: var(--muted); line-height: 1.45; margin-bottom: 1rem; }
-    
-    label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
-    }
-    
-    textarea, select {
-      width: 100%;
-      background: var(--input);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.75rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      outline: none;
-      margin-bottom: 0.85rem;
-    }
-    textarea { min-height: 95px; resize: vertical; }
-    textarea:focus, select:focus { border-color: var(--amber); }
-
-    .character-picker {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.65rem;
-      margin-bottom: 0.85rem;
-    }
-    .char-btn {
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.65rem;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      transition: all 0.2s ease;
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
-    .char-btn.active {
-      border-color: var(--amber);
-      background: rgba(245, 158, 11, 0.12);
-      color: var(--amber);
-    }
-    .char-badge {
-      font-size: 0.68rem;
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      background: var(--border);
-      color: var(--muted);
-    }
-    .char-btn.active .char-badge {
-      background: var(--amber);
-      color: #090d16;
-      font-weight: 700;
-    }
-
-    .control-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .range-group {
-      background: var(--input);
-      border: 1px solid var(--border);
-      padding: 0.65rem 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 0.75rem;
-    }
-    .range-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
-    }
-    .range-header span.val {
-      color: var(--amber);
-      font-weight: bold;
-    }
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--amber);
-      cursor: pointer;
-    }
-
-    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-    .btn-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
-    
-    .btn {
-      width: 100%;
-      background: var(--amber);
-      color: #090d16;
-      border: none;
-      padding: 0.75rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      transition: opacity 0.2s;
-    }
-    .btn:hover { opacity: 0.9; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-secondary { background: var(--input); color: var(--text); border: 1px solid var(--border); }
-    .btn-green { background: var(--green); color: #fff; }
-    .btn-red { background: var(--red); color: #fff; }
-    .btn-purple { background: var(--purple); color: #fff; }
-
-    .status {
-      display: none;
-      margin-top: 0.75rem;
-      padding: 0.7rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-    }
-    .status.info { display: block; background: rgba(59,130,246,0.15); border: 1px solid var(--blue); color: #93c5fd; }
-    .status.success { display: block; background: rgba(16,185,129,0.15); border: 1px solid var(--green); color: #6ee7b7; }
-    .status.error { display: block; background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: #fca5a5; }
-
-    .song-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
-    .song-item {
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-    .song-head { display: flex; gap: 0.7rem; align-items: center; }
-    .song-head img {
-      width: 48px;
-      height: 48px;
-      border-radius: 6px;
-      object-fit: cover;
-      background: var(--border);
-    }
-    .song-meta { overflow: hidden; flex: 1; }
-    .song-title { font-weight: 700; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .song-uuid { font-family: monospace; font-size: 0.72rem; color: var(--muted); }
-    audio { width: 100%; height: 36px; }
-
-    .code-box {
-      background: var(--input);
-      border: 1px solid var(--border);
-      padding: 0.65rem;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 0.74rem;
-      color: #fde68a;
-      word-break: break-all;
-      max-height: 90px;
-      overflow-y: auto;
-      margin-bottom: 0.65rem;
-    }
-    .steps {
-      font-size: 0.78rem;
-      color: var(--muted);
-      padding-left: 1.1rem;
-      line-height: 1.5;
-      margin-bottom: 0.75rem;
-    }
-  </style>
-</head>
-<body>
-
-  <main class="container">
-    <!-- PANEL TEXT TO SPEECH EDGE NATURAL -->
-    <section class="panel">
-      <h1>Edge Natural AI Text to Speech</h1>
-      <p class="desc">Suara natural Ardi &amp; Gadis aktif otomatis di Microsoft Edge tanpa perlu registrasi atau API key.</p>
-
-      <label>Pilih Cepat Karakter Suara:</label>
-      <div class="character-picker">
-        <button type="button" id="pickArdi" class="char-btn active">
-          <span>Ardi (Pria)</span>
-          <span class="char-badge">Natural AI</span>
-        </button>
-        <button type="button" id="pickGadis" class="char-btn">
-          <span>Gadis (Wanita)</span>
-          <span class="char-badge">Natural AI</span>
-        </button>
-      </div>
-
-      <label for="ttsInput">Teks yang akan diucapkan:</label>
-      <textarea id="ttsInput" placeholder="Tuliskan teks di sini...">Halo! Sekarang suara natural Microsoft Edge sudah aktif otomatis. Kamu bisa mendengarkan intonasi alami bahasa Indonesia tanpa konfigurasi yang rumit.</textarea>
-
-      <div class="control-grid">
-        <div>
-          <label for="voiceSelect">Daftar Suara Terdeteksi:</label>
-          <select id="voiceSelect"></select>
-        </div>
-        <div>
-          <label for="stylePreset">Gaya Bicara:</label>
-          <select id="stylePreset">
-            <option value="standard" selected>Normal / Percakapan</option>
-            <option value="formal">Berita / Formal (Tertata)</option>
-            <option value="cheerful">Ceria / Antusias</option>
-            <option value="storyteller">Mendongeng / Santai</option>
-            <option value="deep">Wibawa / Dalam</option>
-            <option value="custom">Kustom (Manual)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="range-group">
-        <div class="range-header">
-          <span>Tinggi Nada Suara (Pitch)</span>
-          <span id="pitchVal" class="val">1.00x</span>
-        </div>
-        <input type="range" id="pitchRange" min="0.5" max="1.5" step="0.05" value="1.0">
-      </div>
-
-      <div class="range-group">
-        <div class="range-header">
-          <span>Kecepatan Bicara (Rate)</span>
-          <span id="rateVal" class="val">1.00x</span>
-        </div>
-        <input type="range" id="rateRange" min="0.5" max="1.8" step="0.05" value="1.0">
-      </div>
-
-      <div class="range-group">
-        <div class="range-header">
-          <span>Volume Suara</span>
-          <span id="volumeVal" class="val">100%</span>
-        </div>
-        <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="1.0">
-      </div>
-
-      <div class="btn-row-3">
-        <button type="button" id="speakBtn" class="btn btn-green">Bicara</button>
-        <button type="button" id="pauseBtn" class="btn btn-secondary">Jeda</button>
-        <button type="button" id="stopBtn" class="btn btn-red">Stop</button>
-      </div>
-
-      <div id="ttsStatus" class="status"></div>
-    </section>
-
-    <!-- PANEL SUNO MULTI-SONG SCANNER -->
-    <section class="panel">
-      <h2>Suno Multi-Song Scanner (Bulk MP3)</h2>
-      <p class="desc">Tempel tautan lagu Suno untuk mengunduh audio MP3 penuh secara praktis.</p>
-
-      <textarea id="bulkInput" placeholder="Tempel 1 atau banyak link lagu Suno di sini..."></textarea>
-
-      <div class="btn-row">
-        <button type="button" id="sampleBulkBtn" class="btn btn-secondary">Isi 2 Contoh</button>
-        <button type="button" id="scanBulkBtn" class="btn">Scan Lagu</button>
-      </div>
-
-      <div id="statusBox" class="status"></div>
-      <div id="songListContainer" class="song-list"></div>
-    </section>
-
-    <!-- PANEL SCRIPT BOOKMARKLET -->
-    <section class="panel">
-      <h2>Script Bookmarklet Suno</h2>
-      <p class="desc">Jalankan di browser ponsel untuk memindai lagu di tab Library Suno.</p>
-      <div id="bookmarkletCode" class="code-box"></div>
-      <button type="button" id="copyScriptBtn" class="btn btn-purple">Salin Script Bookmarklet</button>
-    </section>
-  </main>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // ----------------------------------------------------
-      // MODUL 1: TTS DENGAN PRIORITAS SUARA NATURAL EDGE
-      // ----------------------------------------------------
-      const ttsInput = document.getElementById('ttsInput');
-      const voiceSelect = document.getElementById('voiceSelect');
-      const pickArdi = document.getElementById('pickArdi');
-      const pickGadis = document.getElementById('pickGadis');
-      const stylePreset = document.getElementById('stylePreset');
-      const pitchRange = document.getElementById('pitchRange');
-      const rateRange = document.getElementById('rateRange');
-      const volumeRange = document.getElementById('volumeRange');
-      const pitchVal = document.getElementById('pitchVal');
-      const rateVal = document.getElementById('rateVal');
-      const volumeVal = document.getElementById('volumeVal');
-      const speakBtn = document.getElementById('speakBtn');
-      const pauseBtn = document.getElementById('pauseBtn');
-      const stopBtn = document.getElementById('stopBtn');
-      const ttsStatus = document.getElementById('ttsStatus');
-
-      let voices = [];
-      let activeGender = 'male'; // 'male' = Ardi, 'female' = Gadis
-      const synth = window.speechSynthesis;
-
-      const setTtsStatus = (msg, type = 'info') => {
-        if (!msg) {
-          ttsStatus.className = 'status';
-          ttsStatus.textContent = '';
-          return;
-        }
-        ttsStatus.textContent = msg;
-        ttsStatus.className = `status ${type}`;
-      };
-
-      const PRESETS = {
-        standard: { pitch: 1.0, rate: 1.0 },
-        formal: { pitch: 0.95, rate: 0.92 },
-        cheerful: { pitch: 1.25, rate: 1.1 },
-        storyteller: { pitch: 1.05, rate: 0.85 },
-        deep: { pitch: 0.7, rate: 0.9 }
-      };
-
-      const loadVoices = () => {
-        if (!synth) {
-          setTtsStatus('Browser kamu belum mendukung Web Speech API.', 'error');
-          return;
-        }
-
-        const rawVoices = synth.getVoices() || [];
-        if (rawVoices.length === 0) return;
-
-        // Prioritaskan suara Bahasa Indonesia (id-ID) dan tempatkan Ardi & Gadis di paling atas
-        voices = rawVoices.sort((a, b) => {
-          const aId = a.lang.toLowerCase().includes('id');
-          const bId = b.lang.toLowerCase().includes('id');
-          const aEdge = a.name.toLowerCase().includes('natural');
-          const bEdge = b.name.toLowerCase().includes('natural');
-
-          if (aId && aEdge && (!bId || !bEdge)) return -1;
-          if (bId && bEdge && (!aId || !aEdge)) return 1;
-          if (aId && !bId) return -1;
-          if (!aId && bId) return 1;
-          return a.name.localeCompare(b.name);
-        });
-
-        const prevSelected = voiceSelect.value;
-        voiceSelect.innerHTML = '';
-
-        let ardiVoiceName = '';
-        let gadisVoiceName = '';
-
-        voices.forEach((v) => {
-          const opt = document.createElement('option');
-          opt.value = v.name;
-          const lower = v.name.toLowerCase();
-
-          let tag = '';
-          if (lower.includes('ardi')) {
-            tag = ' [Ardi - Pria Natural]';
-            if (!ardiVoiceName) ardiVoiceName = v.name;
-          } else if (lower.includes('gadis')) {
-            tag = ' [Gadis - Wanita Natural]';
-            if (!gadisVoiceName) gadisVoiceName = v.name;
-          } else if (v.lang.toLowerCase().includes('id')) {
-            tag = ' [Indonesia]';
-          }
-
-          opt.textContent = `${v.name} (${v.lang})${tag}`;
-          voiceSelect.appendChild(opt);
-        });
-
-        // Pilih otomatis berdasarkan tombol karakter yang aktif
-        let targetVoice = activeGender === 'male' ? ardiVoiceName : gadisVoiceName;
-        if (!targetVoice && prevSelected) targetVoice = prevSelected;
-        if (!targetVoice && voices.length > 0) targetVoice = voices[0].name;
-
-        if (targetVoice) {
-          voiceSelect.value = targetVoice;
-        }
-
-        const isEdgeNaturalActive = (activeGender === 'male' && ardiVoiceName) || (activeGender === 'female' && gadisVoiceName);
-        if (isEdgeNaturalActive) {
-          setTtsStatus(`Suara ${activeGender === 'male' ? 'Ardi (Pria)' : 'Gadis (Wanita)'} Natural AI berhasil aktif otomatis!`, 'success');
-        } else {
-          setTtsStatus('Buka file ini di Microsoft Edge untuk menikmati kualitas suara Ardi & Gadis Natural AI.', 'info');
-        }
-      };
-
-      // Inisialisasi suara saat engine browser siap
-      loadVoices();
-      if (synth && synth.onvoiceschanged !== undefined) {
-        synth.onvoiceschanged = loadVoices;
-      }
-
-      // Polling berkala (maksimal 3 detik) untuk mengantisipasi lazy-load suara Edge
-      let retryCount = 0;
-      const voiceCheckInterval = setInterval(() => {
-        retryCount += 1;
-        if (voices.length > 0 && voices.some((v) => v.name.toLowerCase().includes('ardi'))) {
-          clearInterval(voiceCheckInterval);
-        } else {
-          loadVoices();
-          if (retryCount >= 6) clearInterval(voiceCheckInterval);
-        }
-      }, 500);
-
-      // Pemilihan karakter instan
-      const selectCharacter = (gender) => {
-        activeGender = gender;
-        if (gender === 'male') {
-          pickArdi.classList.add('active');
-          pickGadis.classList.remove('active');
-        } else {
-          pickGadis.classList.add('active');
-          pickArdi.classList.remove('active');
-        }
-
-        const match = voices.find((v) => {
-          const name = v.name.toLowerCase();
-          return gender === 'male' ? name.includes('ardi') : name.includes('gadis');
-        });
-
-        if (match) {
-          voiceSelect.value = match.name;
-          setTtsStatus(`Suara beralih ke: ${match.name}`, 'success');
-        } else {
-          // Fallback jika dibuka di browser selain Edge
-          const fallback = voices.find((v) => v.lang.toLowerCase().includes('id'));
-          if (fallback) {
-            voiceSelect.value = fallback.name;
-            setTtsStatus(`Suara dialihkan ke bahasa Indonesia lokal (${fallback.name}).`, 'info');
-          }
-        }
-      };
-
-      pickArdi.addEventListener('click', () => selectCharacter('male'));
-      pickGadis.addEventListener('click', () => selectCharacter('female'));
-
-      voiceSelect.addEventListener('change', () => {
-        const val = voiceSelect.value.toLowerCase();
-        if (val.includes('ardi')) {
-          activeGender = 'male';
-          pickArdi.classList.add('active');
-          pickGadis.classList.remove('active');
-        } else if (val.includes('gadis')) {
-          activeGender = 'female';
-          pickGadis.classList.add('active');
-          pickArdi.classList.remove('active');
-        }
-      });
-
-      // Kontrol Preset & Slider
-      stylePreset.addEventListener('change', () => {
-        const val = stylePreset.value;
-        if (val !== 'custom' && PRESETS[val]) {
-          const cfg = PRESETS[val];
-          pitchRange.value = cfg.pitch;
-          rateRange.value = cfg.rate;
-          pitchVal.textContent = `${cfg.pitch.toFixed(2)}x`;
-          rateVal.textContent = `${cfg.rate.toFixed(2)}x`;
-        }
-      });
-
-      pitchRange.addEventListener('input', () => {
-        pitchVal.textContent = `${parseFloat(pitchRange.value).toFixed(2)}x`;
-        stylePreset.value = 'custom';
-      });
-
-      rateRange.addEventListener('input', () => {
-        rateVal.textContent = `${parseFloat(rateRange.value).toFixed(2)}x`;
-        stylePreset.value = 'custom';
-      });
-
-      volumeRange.addEventListener('input', () => {
-        volumeVal.textContent = `${Math.round(parseFloat(volumeRange.value) * 100)}%`;
-      });
-
-      // Action Buttons
-      speakBtn.addEventListener('click', () => {
-        if (!synth) return;
-
-        if (synth.paused) {
-          synth.resume();
-          setTtsStatus('Melanjutkan suara...', 'info');
-          return;
-        }
-
-        const text = ttsInput.value ? ttsInput.value.trim() : '';
-        if (!text) {
-          setTtsStatus('Tuliskan teks terlebih dahulu.', 'error');
-          return;
-        }
-
-        synth.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        const selected = voices.find((v) => v.name === voiceSelect.value);
-
-        if (selected) {
-          utterance.voice = selected;
-          utterance.lang = selected.lang;
-        }
-
-        utterance.pitch = parseFloat(pitchRange.value) || 1.0;
-        utterance.rate = parseFloat(rateRange.value) || 1.0;
-        utterance.volume = parseFloat(volumeRange.value) || 1.0;
-
-        utterance.onstart = () => {
-          setTtsStatus('Sedang berbicara...', 'info');
-          speakBtn.disabled = true;
-        };
-
-        utterance.onend = () => {
-          setTtsStatus('Selesai berbicara.', 'success');
-          speakBtn.disabled = false;
-        };
-
-        utterance.onerror = (e) => {
-          setTtsStatus(`Gangguan pemutaran suara: ${e.error || 'Terhenti'}`, 'error');
-          speakBtn.disabled = false;
-        };
-
-        synth.speak(utterance);
-      });
-
-      pauseBtn.addEventListener('click', () => {
-        if (synth && synth.speaking) {
-          if (!synth.paused) {
-            synth.pause();
-            setTtsStatus('Suara dijeda.', 'info');
-          } else {
-            synth.resume();
-            setTtsStatus('Suara dilanjutkan.', 'info');
-          }
-        }
-      });
-
-      stopBtn.addEventListener('click', () => {
-        if (synth) {
-          synth.cancel();
-          speakBtn.disabled = false;
-          setTtsStatus('Suara dihentikan.', 'info');
-        }
-      });
-
-      // ----------------------------------------------------
-      // MODUL 2: SUNO BULK SCANNER & SCRIPT
-      // ----------------------------------------------------
-      const bulkInput = document.getElementById('bulkInput');
-      const sampleBulkBtn = document.getElementById('sampleBulkBtn');
-      const scanBulkBtn = document.getElementById('scanBulkBtn');
-      const statusBox = document.getElementById('statusBox');
-      const songListContainer = document.getElementById('songListContainer');
-      const bookmarkletCode = document.getElementById('bookmarkletCode');
-      const copyScriptBtn = document.getElementById('copyScriptBtn');
-
-      const BOOKMARKLET_RAW = `javascript:(function(){try{const links=Array.from(document.querySelectorAll('a[href*="/song/"]')).map(a=>a.href).join('\\n');const text=links||document.body.innerText;const m=text.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi)||[];const ids=[...new Set(m.map(x=>x.toLowerCase()))];if(!ids.length){alert('Tidak ada lagu Suno terdeteksi di layar ini. Scroll dulu halaman Library kamu lalu jalankan lagi.');return;}const old=document.getElementById('suno-dl-overlay');if(old)old.remove();const box=document.createElement('div');box.id='suno-dl-overlay';box.style.cssText='position:fixed;inset:10px;background:#0f172a;color:#fff;z-index:999999;padding:15px;border-radius:12px;border:2px solid #f59e0b;overflow-y:auto;font-family:sans-serif;';box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><b style="color:#f59e0b;font-size:16px;">Ditemukan '+ids.length+' Lagu Suno</b><button onclick="this.parentElement.parentElement.remove()" style="background:#ef4444;color:#fff;border:none;padding:6px 12px;border-radius:6px;">Tutup</button></div>'+ids.map((id,i)=>'<div style="background:#1e293b;padding:10px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">Lagu #'+(i+1)+' ('+id.slice(0,8)+')</span><a href="https://cdn1.suno.ai/'+id+'.mp3" target="_blank" download="suno-'+id.slice(0,8)+'.mp3" style="background:#10b981;color:#fff;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:bold;">Download MP3</a></div>').join('');document.body.appendChild(box);}catch(e){alert('Error: '+e.message);}})();`;
-
-      bookmarkletCode.textContent = BOOKMARKLET_RAW;
-
-      const setStatus = (msg, type = 'info') => {
-        statusBox.textContent = msg;
-        statusBox.className = `status ${type}`;
-      };
-
-      const extractUniqueUuids = (rawText) => {
-        if (typeof rawText !== 'string' || !rawText.trim()) return [];
-        const matches = rawText.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi);
-        if (!matches) return [];
-        return [...new Set(matches.map((id) => id.toLowerCase()))];
-      };
-
-      const renderSongList = (uuidList) => {
-        songListContainer.innerHTML = '';
-
-        uuidList.forEach((uuid, index) => {
-          const mp3Url = `https://cdn1.suno.ai/${uuid}.mp3`;
-          const coverUrl = `https://cdn2.suno.ai/image_${uuid}.jpeg`;
-          const shortId = uuid.slice(0, 8);
-
-          const item = document.createElement('div');
-          item.className = 'song-item';
-          item.innerHTML = `
-            <div class="song-head">
-              <img src="${coverUrl}" alt="Cover">
-              <div class="song-meta">
-                <div class="song-title">Suno Track #${index + 1} (${shortId})</div>
-                <div class="song-uuid">UUID: ${uuid}</div>
-              </div>
-            </div>
-            <audio controls preload="none" src="${mp3Url}"></audio>
-            <div class="btn-row">
-              <button type="button" class="btn btn-green dl-trigger" data-mp3="${mp3Url}" data-name="suno-${shortId}.mp3">
-                Download MP3
-              </button>
-              <a href="${mp3Url}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-                Buka Tab Baru
-              </a>
-            </div>
-          `;
-          songListContainer.appendChild(item);
-        });
-
-        songListContainer.querySelectorAll('.dl-trigger').forEach((btn) => {
-          btn.addEventListener('click', async () => {
-            const url = btn.getAttribute('data-mp3');
-            const name = btn.getAttribute('data-name');
-            if (!url) return;
-
-            const originalText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = 'Mengunduh...';
-
-            try {
-              const res = await fetch(url);
-              if (!res.ok) throw new Error('Fallback redirect');
-              const blob = await res.blob();
-              const blobUrl = URL.createObjectURL(blob);
-
-              const a = document.createElement('a');
-              a.href = blobUrl;
-              a.download = name;
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              setTimeout(() => URL.revokeObjectURL(blobUrl), 8000);
-            } catch (_) {
-              window.open(url, '_blank', 'noopener,noreferrer');
-            } finally {
-              btn.disabled = false;
-              btn.textContent = originalText;
-            }
-          });
-        });
-      };
-
-      scanBulkBtn.addEventListener('click', () => {
-        const text = bulkInput.value;
-        const uuids = extractUniqueUuids(text);
-
-        if (uuids.length === 0) {
-          songListContainer.innerHTML = '';
-          setStatus('Tidak ditemukan kode UUID lagu Suno. Klik "Isi 2 Contoh" untuk mencoba.', 'error');
-          return;
-        }
-
-        renderSongList(uuids);
-        setStatus(`Berhasil memindai ${uuids.length} lagu Suno siap unduh!`, 'success');
-      });
-
-      sampleBulkBtn.addEventListener('click', () => {
-        bulkInput.value = [
-          'https://suno.com/song/d3632e1f-95a4-4f25-8353-042c7c8122f9',
-          'https://suno.com/song/6f4c4902-8f61-4250-98a4-43c65cf28024'
-        ].join('\n');
-        scanBulkBtn.click();
-      });
-
-      copyScriptBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(BOOKMARKLET_RAW);
-          copyScriptBtn.textContent = 'Script Berhasil Disalin!';
-          setTimeout(() => {
-            copyScriptBtn.textContent = 'Salin Script Bookmarklet';
-          }, 2000);
-        } catch (_) {
-          setStatus('Silakan tahan dan salin manual teks kuning di dalam kotak.', 'info');
         }
       });
     });
